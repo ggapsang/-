@@ -9,19 +9,19 @@ Sub SwapRangesDynamically()
     Set range1 = Selection
     
     ' 두 번째 범위 입력 요청
-    inputRange = Application.InputBox("두 번째 범위를 입력하거나 선택하세요:", Type:=8)
+    inputRange = Application.InputBox("두 번째 범위 입력:", Type:=8)
     
     ' 입력받은 두 번째 범위 설정
     If TypeName(inputRange) = "Range" Then
         Set range2 = inputRange
     Else
-        MsgBox "올바른 범위를 선택하지 않았습니다."
+        MsgBox "올바른 범위가 아님"
         Exit Sub
     End If
     
     ' 두 범위의 크기 비교
     If range1.Rows.Count <> range2.Rows.Count Or range1.Columns.Count <> range2.Columns.Count Then
-        MsgBox "범위의 크기가 일치하지 않습니다."
+        MsgBox "범위의 크기가 일치하지 않음."
         Exit Sub
     End If
     
@@ -31,6 +31,5 @@ Sub SwapRangesDynamically()
         range1.Cells(i, 1).Value = range2.Cells(i, 1).Value
         range2.Cells(i, 1).Value = tempValue
     Next i
-    
-    MsgBox "값이 교환되었습니다."
+
 End Sub
