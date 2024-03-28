@@ -53,36 +53,49 @@ Sub MergeTableSetOrder()
     
     
     Dim i_1 As Long
-    Dim i_2 As Long
     Dim j_1 As Long
     Dim j_2 As Long
                             
     
     'key-col을 기준으로 매핑하면서 우선순위에 따라 배열의 값을 수정
     
+    Dim dictKeyMap As Object
+    Dim dictColMap As Object
+    
+    Set dictKeyMap = CreateObject("Scripting.Dictionary")
+    Set dictColMap = CreateObject("Scripting.Dictionary")
+    
+    ' keyArray_1를 딕셔너리에 매핑
+    For k1 = LBound(keyArray_1, 1) To UBound(keyArray_1, 1)
+        dictKeyMap(keyArray_1(k1, 1)) = k1
+    Next k1
+    
+    ' colArray_1의 칼럼 이름을 딕셔너리에 매핑
+    For col_1 = LBound(colArray_1, 2) To UBound(colArray_1, 2)
+        dictColMap(colArray_1(1, col_1)) = col_1
+    Next col_1
+    
+    ' keyArray_2를 순회하며 일치하는 키 찾기
     For k2 = LBound(keyArray_2, 1) To UBound(keyArray_2, 1)
-        '일치하는 키 값 찾기
-        For k1 = LBound(keyArray_1, 1) To UBound(keyArray_1, 1)
-            ' 키 값이 일치하는 경우
-            If keyArray_2(k2, 1) = keyArray_1(k1, 1) Then
-                i_1 = k1 '값 배열의 행 번호 찾음
-                i_2 = k2
-                '모든 열에 대해서 검사해야 하므로 내부 For 루프를 벗어나지 않음
-                '일치하는 칼럼 값 찾기
-                For col_2 = LBound(colArray_2, 2) To UBound(colArray_2, 2)
-                    For col_1 = LBound(colArray_1, 2) To UBound(colArray_1, 2)
-                        If colArray_1(1, col_1) = colArray_2(1, col_2) Then
-                            j_1 = col_1
-                            j_2 = col_2
-                            '해당 위치가 비어있으면 값을 복사
-                            If IsEmpty(valueArray_1(i_1, j_1)) Or valueArray_1(i_1, j_1) = "" Then
-                                valueArray_1(i_1, j_1) = valueArray_2(i_2, j_2)
-                            End If
-                        End If
-                    Next col_1
-                Next col_2
-            End If
-        Next k1
+        If dictKeyMap.Exists(keyArray_2(k2, 1)) Then
+            i_1 = dictKeyMap(keyArray_2(k2, 1))
+            
+            '일치하는 칼럼 값 찾기
+            For col_2 = LBound(colArray_2, 2) To UBound(colArray_2, 2)
+                If dictColMap.Exists(colArray_2(1, col_2)) Then
+                
+                    j_1 = dictColMap(colArray_2(1, col_2))
+                    j_2 = col_2
+            
+            
+                    '해당 위치가 비어있으면 값을 복사
+                    If IsEmpty(valueArray_1(i_1, j_1)) Or valueArray_1(i_1, j_1) = "" Then
+                        valueArray_1(i_1, j_1) = valueArray_2(k2, col_2)
+                    End If
+            
+                End If
+            Next col_2
+        End If
     Next k2
 
     
